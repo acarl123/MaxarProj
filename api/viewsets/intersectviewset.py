@@ -17,11 +17,19 @@ class InterSectViewSet(viewsets.GenericViewSet):
         for polygon in data.get('features'):
             coords = polygon.get('geometry').get('coordinates')[0]
             polygons.append(Polygon(coords))
-        
-        if len(polygons) != 2: 
-            return HttpResponse(400)
 
         return Response({'intersect': polygons[0].intersects(polygons[1])})
+    
+    def validate_geojson(self, request):
+        data = geojson.loads(request.body)
+        try:
+            featureCollection = geojson.FeatureCollection(data)
+            featureCollection.is_valid
+            if not len(featureCollection['features']) == 2:
+                return Response({'error': 'Incorrect number of polygons'})
+        except AttributeError:
+            return Response({'error': 'Invalid geoJSON'})
+        return Response({})
 
     def get(self, request):
         return HttpResponse(200)

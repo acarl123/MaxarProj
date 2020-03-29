@@ -1,0 +1,55 @@
+{% load static %}
+<html>
+    <h1>Paste some geoJSON to see if your polygons intersect!</h1><br />
+    <textarea rows=50 cols=200 placeholder="paste json here" id="geoJSONtext">
+    </textarea>
+    <br /><br />
+    <button onclick="validate_and_submit_form();">Check Intersection</button>
+</html>
+<script>
+function validate_and_submit_form() {
+    // this is hacky but cute
+    // validates form via backend and checks for intersection if no errors
+    if(document.getElementById("geoJSONtext").value ==null){
+        alert('Please enter some geoJSON!');
+        return false;
+    }
+    try {
+        JSON.parse(document.getElementById("geoJSONtext").value);
+    }
+    catch (e) {
+        alert('Please enter valid JSON!');
+        return false;
+    }
+    validate().then(errors => submit_form(errors));
+}
+async function validate(urlpath) {
+    let response = await fetch('{% url 'validate' %}', {
+        method: 'post',
+        body: document.getElementById("geoJSONtext").value
+        });
+    let data = await response.json();
+    return data;
+}
+function submit_form(errors) {
+    if (errors['error']){
+        alert(errors.error);
+        return false;
+    }
+    check_intersect()
+}
+function check_intersect() {
+    send_post_data().then(data => alert_intersect(data));
+}
+async function send_post_data(urlpath) {
+    let response = await fetch('{% url 'intersect' %}', {
+        method: 'post',
+        body: document.getElementById("geoJSONtext").value
+        });
+    let data = await response.json();
+    return data;
+}
+function alert_intersect(data) {
+    alert(`Your geoJSON polygons ${data.intersect ? '' : 'do not '}intersect!`);
+}
+</script>

@@ -8,4 +8,5 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('', include(router.urls)),
     path(r'intersect/', InterSectViewSet.as_view({'get': 'get', 'post': 'post'}), name="intersect"),
+    path(r'validate/', InterSectViewSet.as_view({'post': 'validate_geojson'}), name='validate'),
 ]
