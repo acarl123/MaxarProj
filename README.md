@@ -3,7 +3,7 @@
 -----
 
 ### Set Up
-Clone this repository and run `pip install -r requirements.txt`
+Clone this repository and run `pip install -r requirements.txt` from cloned directory.
 
 ### Running
 Navigate to top-level folder of cloned repository and run `python manage.py runserver`.
